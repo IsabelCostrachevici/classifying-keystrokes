@@ -110,7 +110,7 @@ class KeystrokeDataset(Dataset):
             return self.__getitem__((idx + 1) % len(self.files))  
         return img_tensor, torch.tensor(self.labels[idx], dtype=torch.long)
 
-# ================= Training Configuration ================= #
+
 
 label_mapping = {chr(i): i - ord('a') for i in range(ord('a'), ord('z') + 1)}
 dataset = KeystrokeDataset("E:\\AN4\\licenta\\dataset", label_mapping)
