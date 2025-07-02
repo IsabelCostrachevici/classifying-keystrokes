@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Mar 13 10:25:17 2025
-
-@author: user
-"""
-
-    
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -233,7 +225,7 @@ def train_and_evaluate(model, train_loader, val_loader, test_loader, loss_fn, op
         
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            torch.save(model.state_dict(), "best_model_wave_coatnet.pth")
+            torch.save(model.state_dict(), "best_model_mel_coatnet_noise_split_3.pth")
 
             
         epoch_end_time = timer()
@@ -267,9 +259,9 @@ optimizer = optim.Adam(model.parameters(), lr=0.0001, weight_decay = 0.0001)
 
 
 train_loader, val_loader, test_loader, class_names = split(
-    train_dir="E:\\AN4\\licenta\\dataset_wave_oficial\\train",
-    val_dir="E:\\AN4\\licenta\\dataset_wave_oficial\\val",
-    test_dir="E:\\AN4\\licenta\\dataset_wave_oficial\\test",
+    train_dir="E:\\AN4\\licenta\\dataset_mel_noise\\train",
+    val_dir="E:\\AN4\\licenta\\dataset_mel_noise\\val",
+    test_dir="E:\\AN4\\licenta\\dataset_mel_noise\\test",
     batch_size=8
 )
 
@@ -278,5 +270,4 @@ y_pred, labels = train_and_evaluate(model, train_loader, val_loader, test_loader
 fig, ax = conf_mat(y_pred, labels, num_classes, class_names, figsize=(10,7))
 plt.show()
 
-print_classification_report(labels, y_pred, class_names, filename="classification_report_wave_coatnet.txt")
-
+print_classification_report(labels, y_pred, class_names, filename="classification_report_mel_coatnet_noise_split_3.txt")

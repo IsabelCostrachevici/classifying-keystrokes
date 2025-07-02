@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Dec  7 21:50:24 2024
-
-@author: user
-"""
 import os
 import numpy as np
 import librosa
@@ -14,23 +8,19 @@ import soundfile as sf
 import pywt
 from PIL import Image
 
-
-input_folder = "E:\\AN4\\licenta\\dataset_noise\\Raw_Data"
-
+input_folder = "E:\\AN4\\licenta\\val_preprocesare\\Raw_Data"
 
 base_output_folders = {
-    "waveforms": "E:\\AN4\\licenta\\dataset_noise\\waveforms",
-    "segmented_audio": "E:\\AN4\\licenta\\dataset_noise\\segmented_audio",
-    "fft_representations": "E:\\AN4\\licenta\\dataset_noise\\fft_representations",
-    "mel_spectrograms": "E:\\AN4\\licenta\\dataset_noise\\mel_spectrograms",    
-    "mfcc_spectrograms": "E:\\AN4\\licenta\\dataset_noise\\mfcc_spectrograms",
-    "wavelet_spectrograms": "E:\\AN4\\licenta\\dataset_noise\\wavelet_spectrograms"
+    "waveforms": "E:\\AN4\\licenta\\val_preprocesare\\waveforms",
+    "segmented_audio": "E:\\AN4\\licenta\\val_preprocesare\\segmented_audio",
+    "fft_representations": "E:\\AN4\\licenta\\val_preprocesare\\fft_representations",
+    "mel_spectrograms": "E:\\AN4\\licenta\\val_preprocesare\\mel_spectrograms",    
+    "mfcc_spectrograms": "E:\\AN4\\licenta\\val_preprocesare\\mfcc_spectrograms",
+    "wavelet_spectrograms": "E:\\AN4\\licenta\\val_preprocesare\\wavelet_spectrograms"
 }
-
 
 for category, path in base_output_folders.items():
     os.makedirs(path, exist_ok=True)    
-
 
 def wavelet_transform(segment, sr):
     scales = np.arange(1, 64)  
@@ -39,7 +29,6 @@ def wavelet_transform(segment, sr):
     coefficients, _ = pywt.cwt(segment, scales, wavelet, 1.0 / sr)
     
     return coefficients
-
 
 for file in os.listdir(input_folder):
     if file.endswith(".wav"):
@@ -84,6 +73,8 @@ for file in os.listdir(input_folder):
 
             plt.figure(figsize=(10, 3))
             librosa.display.waveshow(segment, sr=sr, alpha=0.8)
+            plt.xlabel("Time")
+            plt.ylabel("Amplitude")
             plt.tight_layout()
             plt.savefig(os.path.join(base_output_folders["waveforms"], letter, f"{segment_name}.png"))
             plt.close()
@@ -94,6 +85,8 @@ for file in os.listdir(input_folder):
 
             plt.figure(figsize=(10, 4))
             plt.plot(fft_frequencies[:len(fft_frequencies)//2], fft_magnitude[:len(fft_magnitude)//2])
+            plt.xlabel("Frequency")
+            plt.ylabel("Magnitude")
             plt.tight_layout()
             plt.savefig(os.path.join(base_output_folders["fft_representations"], letter, f"{segment_name}.png"))
             plt.close()
@@ -102,9 +95,8 @@ for file in os.listdir(input_folder):
             mel_spectrogram_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
 
             plt.figure(figsize=(10, 3))
-            librosa.display.specshow(mel_spectrogram_db, sr=sr, hop_length=512)
-            #plt.colorbar(format='%+2.0f')
-            #plt.tight_layout()
+            librosa.display.specshow(mel_spectrogram_db, sr=sr, hop_length=512, x_axis = "time", y_axis='mel')
+            plt.tight_layout()
             output_path = os.path.join(base_output_folders["mel_spectrograms"], letter, f"{segment_name}.png")
             plt.savefig(output_path, transparent=False, facecolor="white")
             plt.close()
@@ -115,9 +107,8 @@ for file in os.listdir(input_folder):
             mfccs = mfccs[1:, :]
 
             plt.figure(figsize=(10, 3))
-            librosa.display.specshow(mfccs, sr=sr, hop_length=512)
-            #plt.colorbar(format='%+2.0f dB')
-            #plt.tight_layout()
+            librosa.display.specshow(mfccs, sr=sr, hop_length=512, x_axis ='time')
+            plt.tight_layout()
             output_path=os.path.join(base_output_folders["mfcc_spectrograms"], letter, f"{segment_name}.png")
             plt.savefig(output_path, transparent=False, facecolor="white")
             plt.close()
@@ -128,16 +119,11 @@ for file in os.listdir(input_folder):
 
             plt.figure(figsize=(10, 3))
             plt.imshow(np.abs(wavelet_coeffs), aspect='auto', extent=[0, fixed_length, 1, 64])
-            #plt.colorbar(label='Magnitude')
-            #plt.xlabel("Time (s)")
-            #plt.ylabel("Scales")
-            #plt.tight_layout()
+            plt.xlabel("Time")
+            plt.ylabel("Scales")
+            plt.tight_layout()
             output_path=os.path.join(base_output_folders["wavelet_spectrograms"], letter, f"{segment_name}.png")
             plt.savefig(output_path, transparent=False, facecolor="white")
             plt.close()
             img = Image.open(output_path).convert("RGB")
             img.save(output_path)
-
-print("Processing complete. All files saved in designated folders.")
-
-
